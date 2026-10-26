@@ -1,0 +1,6 @@
+# Archivos a ignorar
+servidor
+*.o
+*.exe
+core
+*.out
