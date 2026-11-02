@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-labelledby="titulo-ejemplo">
+    <title id="titulo-ejemplo">Servidor de archivos estáticos</title>
+    <defs>
+        <linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#2c3e50"/>
+            <stop offset="1" stop-color="#1f6feb"/>
+        </linearGradient>
+    </defs>
+    <rect width="320" height="180" rx="18" fill="url(#fondo)"/>
+    <rect x="60" y="42" width="200" height="32" rx="6" fill="#f4f4f4"/>
+    <rect x="60" y="84" width="200" height="32" rx="6" fill="#d9e7ff"/>
+    <rect x="60" y="126" width="200" height="20" rx="6" fill="#f4f4f4"/>
+    <circle cx="76" cy="58" r="5" fill="#2c3e50"/>
+    <circle cx="76" cy="100" r="5" fill="#2c3e50"/>
+    <text x="160" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#ffffff">Actividad 22</text>
+</svg>
