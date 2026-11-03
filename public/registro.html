@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar alumno</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/estilos.css">
+</head>
+<body>
+    <h1>Registrar alumno</h1>
+    <nav class="menu">
+        <a href="/">Inicio</a>
+        <a href="/login.html">Login</a>
+        <a href="/alumnos.html">Alumnos</a>
+        <a href="/materias.html">Materias</a>
+        <a href="/registro.html">Registrar alumno</a>
+    </nav>
+    <main class="tarjeta">
+        <form action="/registrar" method="POST">
+            <label for="nombre">Nombre</label>
+            <input id="nombre" name="nombre" type="text" required>
+
+            <label for="edad">Edad</label>
+            <input id="edad" name="edad" type="number" min="0" max="120" step="1" required>
+
+            <label for="matricula">Matrícula</label>
+            <input id="matricula" name="matricula" type="text" required>
+
+            <button type="submit">Enviar</button>
+        </form>
+        <p><a href="/">Volver al inicio</a></p>
+        <p data-js>JavaScript no cargado.</p>
+    </main>
+    <footer>Actividad 23 - Registro de alumnos</footer>
+    <script src="/js/app.js" defer></script>
+</body>
+</html>
