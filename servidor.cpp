@@ -9,6 +9,7 @@
 #include <csignal>
 #include <filesystem>
 #include <system_error>
+#include <ctime>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -285,45 +286,81 @@ int main() {
             } else if (metodo != "GET") {
                 enviarError(clienteSocket, "405 Method Not Allowed", "405 - Método no permitido", "Solo se permite el método GET.");
             } else {
-                size_t posicionQuery = objetivo.find('?');
+                std::string rutaSinQuery = objetivo;
+                size_t posicionQuery = rutaSinQuery.find('?');
                 if (posicionQuery != std::string::npos) {
-                    objetivo.erase(posicionQuery);
+                    rutaSinQuery.erase(posicionQuery);
                 }
 
-                size_t posicionFragmento = objetivo.find('#');
+                size_t posicionFragmento = rutaSinQuery.find('#');
                 if (posicionFragmento != std::string::npos) {
-                    objetivo.erase(posicionFragmento);
+                    rutaSinQuery.erase(posicionFragmento);
                 }
 
-                std::string rutaDecodificada;
-                if (!decodificarURL(objetivo, rutaDecodificada)) {
-                    enviarError(clienteSocket, "400 Bad Request", "400 - Ruta inválida", "La ruta solicitada no tiene una codificación válida.");
-                } else {
-                    if (rutaDecodificada.empty()) {
-                        rutaDecodificada = "/";
-                    }
+                if (rutaSinQuery.rfind("/api/", 0) == 0) {
+                    std::cout << "[API] GET " << rutaSinQuery << std::endl;
 
-                    if (rutaDecodificada.front() != '/') {
-                        enviarError(clienteSocket, "400 Bad Request", "400 - Ruta inválida", "La ruta solicitada debe comenzar con /.");
+                    if (rutaSinQuery == "/api/hola") {
+                        enviarRespuesta(clienteSocket, "200 OK", "text/plain; charset=UTF-8", "Hola desde C++");
+                    } else if (rutaSinQuery == "/api/version") {
+                        enviarRespuesta(clienteSocket, "200 OK", "text/plain; charset=UTF-8", "Servidor v1.0.0");
+                    } else if (rutaSinQuery == "/api/hora") {
+                        std::time_t ahora = std::time(nullptr);
+                        if (ahora == static_cast<std::time_t>(-1)) {
+                            enviarRespuesta(clienteSocket, "500 Internal Server Error", "text/plain; charset=UTF-8", "Error al obtener la hora");
+                            std::cout << "[RESPUESTA] 500 Internal Server Error" << std::endl;
+                        } else {
+                            std::tm *tmLocal = std::localtime(&ahora);
+                            if (tmLocal == nullptr) {
+                                enviarRespuesta(clienteSocket, "500 Internal Server Error", "text/plain; charset=UTF-8", "Error al obtener la hora");
+                                std::cout << "[RESPUESTA] 500 Internal Server Error" << std::endl;
+                            } else {
+                                char buf[32];
+                                if (std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", tmLocal) == 0) {
+                                    enviarRespuesta(clienteSocket, "500 Internal Server Error", "text/plain; charset=UTF-8", "Error al obtener la hora");
+                                    std::cout << "[RESPUESTA] 500 Internal Server Error" << std::endl;
+                                } else {
+                                    enviarRespuesta(clienteSocket, "200 OK", "text/plain; charset=UTF-8", std::string(buf));
+                                    std::cout << "[RESPUESTA] 200 OK - " << rutaSinQuery << std::endl;
+                                }
+                            }
+                        }
+                    } else if (rutaSinQuery == "/api/status") {
+                        enviarRespuesta(clienteSocket, "200 OK", "text/plain; charset=UTF-8", "OK");
                     } else {
-                        if (rutaDecodificada == "/") {
-                            rutaDecodificada = "/index.html";
+                        enviarRespuesta(clienteSocket, "404 Not Found", "text/plain; charset=UTF-8", "Endpoint no encontrado");
+                    }
+                } else {
+                    std::string rutaDecodificada;
+                    if (!decodificarURL(rutaSinQuery, rutaDecodificada)) {
+                        enviarError(clienteSocket, "400 Bad Request", "400 - Ruta inválida", "La ruta solicitada no tiene una codificación válida.");
+                    } else {
+                        if (rutaDecodificada.empty()) {
+                            rutaDecodificada = "/";
                         }
 
-                        std::string rutaRelativa = rutaDecodificada.substr(1);
-                        fs::path archivoResuelto;
-
-                        if (!resolverRutaPublica(raizPublica, rutaRelativa, archivoResuelto)) {
-                            enviarError(clienteSocket, "404 Not Found", "404 - Archivo no encontrado", "El archivo solicitado no existe o la ruta no está permitida.");
+                        if (rutaDecodificada.front() != '/') {
+                            enviarError(clienteSocket, "400 Bad Request", "400 - Ruta inválida", "La ruta solicitada debe comenzar con /.");
                         } else {
-                            std::string contenido;
-                            if (!leerArchivo(archivoResuelto.string(), contenido)) {
-                                enviarError(clienteSocket, "404 Not Found", "404 - Archivo no encontrado", "No se pudo leer el archivo solicitado.");
+                            if (rutaDecodificada == "/") {
+                                rutaDecodificada = "/index.html";
+                            }
+
+                            std::string rutaRelativa = rutaDecodificada.substr(1);
+                            fs::path archivoResuelto;
+
+                            if (!resolverRutaPublica(raizPublica, rutaRelativa, archivoResuelto)) {
+                                enviarError(clienteSocket, "404 Not Found", "404 - Archivo no encontrado", "El archivo solicitado no existe o la ruta no está permitida.");
                             } else {
-                                std::string extension = obtenerExtension(rutaDecodificada);
-                                std::string tipoMIME = obtenerTipoMIME(extension);
-                                enviarRespuesta(clienteSocket, "200 OK", tipoMIME, contenido);
-                                std::cout << "[RESPUESTA] 200 OK - " << archivoResuelto.string() << " (" << contenido.size() << " bytes)" << std::endl;
+                                std::string contenido;
+                                if (!leerArchivo(archivoResuelto.string(), contenido)) {
+                                    enviarError(clienteSocket, "404 Not Found", "404 - Archivo no encontrado", "No se pudo leer el archivo solicitado.");
+                                } else {
+                                    std::string extension = obtenerExtension(rutaDecodificada);
+                                    std::string tipoMIME = obtenerTipoMIME(extension);
+                                    enviarRespuesta(clienteSocket, "200 OK", tipoMIME, contenido);
+                                    std::cout << "[RESPUESTA] 200 OK - " << archivoResuelto.string() << " (" << contenido.size() << " bytes)" << std::endl;
+                                }
                             }
                         }
                     }
