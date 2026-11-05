@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctica JSON - Actividad 25</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/estilos.css">
+    <style>
+        .json-page h2 {
+            margin-bottom: 0.25rem;
+            font-size: 1.1rem;
+        }
+
+        .json-page pre {
+            margin: 0.5rem 0 1.5rem;
+            padding: 0.75rem 1rem;
+            border-left: 4px solid var(--acento);
+            border-radius: 0.4rem;
+            background-color: #f8f9fa;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            text-align: left;
+        }
+    </style>
+</head>
+<body class="json-page">
+    <h1>Práctica JSON</h1>
+    <nav class="menu">
+        <a href="/">Inicio</a>
+        <a href="/json.html">Práctica JSON</a>
+    </nav>
+    <main class="tarjeta">
+        <p>Demostraciones de objetos, texto JSON, tipos, errores y almacenamiento local.</p>
+
+        <h2>1. Objeto alumno y tipos de sus campos</h2>
+        <pre id="demo1"></pre>
+
+        <h2>2. Conversión a texto con JSON.stringify</h2>
+        <pre id="demo2"></pre>
+
+        <h2>3. Comparación de tipos con typeof</h2>
+        <pre id="demo3"></pre>
+
+        <h2>4. Texto JSON convertido a objeto con JSON.parse</h2>
+        <pre id="demo4"></pre>
+
+        <h2>5. JSON inválido capturado con try...catch</h2>
+        <pre id="demo5"></pre>
+
+        <h2>6. Guardar y recuperar en localStorage</h2>
+        <pre id="demo6"></pre>
+
+        <h2>7. Función omitida al convertir a JSON</h2>
+        <pre id="demo7"></pre>
+
+        <h2>8. Referencias distintas con los mismos datos</h2>
+        <pre id="demo8"></pre>
+    </main>
+    <footer>Actividad 25 - Introducción a JSON</footer>
+    <script src="/js/json.js" defer></script>
+</body>
+</html>
